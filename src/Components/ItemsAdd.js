@@ -1,7 +1,14 @@
-import React, { useState } from "react";
-import { json } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useLoaderData } from "react-router-dom";
 
 const ItemsAdd = () => {
+  const displayData = useLoaderData();
+  const [displayItems, setDisplayItems] = useState([]);
+
+  useEffect(() => {
+    setDisplayItems(displayData);
+  }, []);
+
   const [items, setItems] = useState({});
   const itemsAddedHandelar = (event) => {
     event.preventDefault();
@@ -15,9 +22,17 @@ const ItemsAdd = () => {
         "content-type": "application/json",
       },
       body: JSON.stringify(items),
-    });
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.insertedId) {
+          const newData = [...displayData, items];
+          setDisplayItems(newData);
 
-    event.target.reset();
+          alert("Item added Sussectfully");
+          event.target.reset();
+        }
+      });
   };
 
   const itemsAdded = (event) => {
@@ -26,6 +41,10 @@ const ItemsAdd = () => {
 
     items[name] = value;
   };
+
+  const itemsDeletedHandelar = (id) => {};
+
+  console.log(displayData);
   return (
     <div className="max-w-[1000px] mx-auto">
       <div>
@@ -61,17 +80,26 @@ const ItemsAdd = () => {
         <div className="mt-5">
           <table className="w-full">
             <tr className="border border-black">
-              <th className="border border-black">SL</th>
+              <th className="border border-black">Deleted</th>
               <th className="border border-black">Name</th>
               <th className="border border-black">Price</th>
               <th className="border border-black">Quantity</th>
             </tr>
-            <tr className="text-center">
-              <td className="border border-black">1</td>
-              <td className="border border-black">mango</td>
-              <td className="border border-black">$20</td>
-              <td className="border border-black">200</td>
-            </tr>
+            {displayItems.map((data) => (
+              <tr className="text-center">
+                <td className="border border-black">
+                  <button
+                    onClick={() => itemsDeletedHandelar(data._id)}
+                    className="text-red-600 font-bold"
+                  >
+                    X
+                  </button>
+                </td>
+                <td className="border border-black">{data.name}</td>
+                <td className="border border-black">${data.price}</td>
+                <td className="border border-black">{data.quantity}</td>
+              </tr>
+            ))}
           </table>
         </div>
       </div>
