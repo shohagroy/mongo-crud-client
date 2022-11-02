@@ -11,7 +11,7 @@ export const router = createBrowserRouter([
       {
         path: "/items",
         element: <ItemsAdd />,
-        loader: () => fetch("http://localhost:5000/items"),
+        loader: async () => fetch("http://localhost:5000/items"),
       },
       { path: "/purchase", element: <Purchase /> },
     ],
